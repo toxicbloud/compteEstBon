@@ -1,7 +1,50 @@
-fonction calculer():
-
-
-Lexique
-début
-    
+fonction compteEstBon(t:tableau entier, nb:entier,attendu:entier):booleen
+debut
+    nombreAppel <- nombreAppel + 1
+    pour i de 0 a n faire
+        si t[i]= attendu alors
+            retourne  vrai
+        fsi
+        pour j de i+1 a n faire
+            pour k de nombre a nombre faire
+                res <- calculer(k,t[i],t[j])
+                si res > 0 alors
+                    
+                fsi
+            fpour
+        fpour
+    fpour
 fin
+
+fonction calculer( op:entier, nb1:entier, nb2:entier):entier
+debut
+    si op=0 alors
+        retourne nb1+nb2
+    sinon
+        si op=1 alors
+            si nb1>nb2 alors
+                retourne nb1-nb2
+            sinon
+                retourne -1
+            fsi
+        sinon
+            si op=2 alors
+                retourne nb1*nb2
+            sinon
+               si op=3 alors
+                   si nb1%nb2==0 alors
+                       retourne nb1/nb2
+                   fsi
+               sinon
+                   
+               fsi 
+            fsi
+        fsi
+    fsi
+fin
+
+lexique:
+    Type1 = > // description
+    nombreAppel: entier // nombre d'appel de la fonction recursive compteEstBon
+    i: entier // description
+    t: tableau
