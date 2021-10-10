@@ -2,19 +2,24 @@ import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Collection;
 
+
 public class CompteEstBon {
     enum Operateurs {
         addition, soustraction, division, multiplication
     }
 
     public static boolean trouve = false;
+    public static int nombreAppel=0;
 
     public static void main(String[] args) {
         int[] tab = { Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2]),
                 Integer.parseInt(args[3]), Integer.parseInt(args[4]), Integer.parseInt(args[5]) };
 
         int result = Integer.parseInt(args[6]);
+        long start1 = System.currentTimeMillis();
         compteEstBon(tab, result);
+        long end1 = System.currentTimeMillis();      
+        System.out.println("Elapsed Time in milli seconds: "+ (end1-start1));
     }
 
     public static int calculer(Operateurs op, int nb1, int nb2) {
@@ -40,6 +45,8 @@ public class CompteEstBon {
     }
 
     public static int compteEstBon(int[] tab, int attendu) {
+        triDecroissantTab(tab);
+        nombreAppel++;
         if (trouve)
             return 1;
         for (int i = 0; i < tab.length - 1; i++) {
@@ -51,21 +58,24 @@ public class CompteEstBon {
                 // solution = adjSolutionString(solution, tab[i], tab[i + 1], op);
                 if (res == attendu) {
                     System.out.println("compte est bon");
-                    for(int j=0;j<solution.length;j++){
-                    System.out.println(solution[j]+" "+solution[j+2]+" "+solution[j+1]);
+                    System.out.println("nombres d'appel : "+nombreAppel);
+                    int j=0;
+                    while(j<solution.length){
+                        // System.out.println(solution[j]+" "+intToString(solution[j+2])+" "+solution[j+1]);
+                        j++;
                     }
                     // System.out.println(solution);
                     trouve = true;
                     return 1;
                 }
                 if (res <= 0)
-                    return 1;
+                    continue; // si tu break tu gagne *10 en appel
                 int[] newTab = new int[tab.length - 1];
                 for (int j = 0; j < newTab.length - 1; j++) {
                     newTab[j] = tab[j + 2];
                 }
                 newTab[newTab.length - 1] = res;
-                triDecroissantTab(newTab);
+                // triDecroissantTab(newTab); // inutile si tu tries en prems
                 compteEstBon(newTab, attendu);
             }
             /*
@@ -126,6 +136,22 @@ public class CompteEstBon {
                 opInt = i;
         }
         return opInt;
+    }
+
+    public static String intToString(int i){
+        switch (i) {
+            case 0:
+                return "+";
+            case 1:
+                return "-";
+            case 2:
+                return "/";
+            case 3:
+                return "*";
+            default:
+                break;
+        }
+        return "null";
     }
 
     public static void triDecroissantTab(int[] array) {
