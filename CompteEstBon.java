@@ -9,7 +9,9 @@ public class CompteEstBon {
     }
 
     public static boolean trouve = false;
+    public static int plusproche = -99999999;
     public static int nombreAppel=0;
+    public static StringBuffer affichage = new StringBuffer();
 
     public static void main(String[] args) {
         int[] tab = { Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2]),
@@ -20,6 +22,7 @@ public class CompteEstBon {
         compteEstBon(tab, result);
         long end1 = System.currentTimeMillis();      
         System.out.println("Elapsed Time in milli seconds: "+ (end1-start1));
+        System.out.println(affichage);
     }
 
     public static int calculer(Operateurs op, int nb1, int nb2) {
@@ -44,65 +47,33 @@ public class CompteEstBon {
         return res;
     }
 
-    public static int compteEstBon(int[] tab, int attendu) {
+    public static Boolean compteEstBon(int[] tab, int attendu) {
         triDecroissantTab(tab);
         nombreAppel++;
         if (trouve)
-            return 1;
+            return true;
         for (int i = 0; i < tab.length - 1; i++) {
             for (Operateurs op : Operateurs.values()) {
-                int[] solution = new int[2];
-                // String solution = " ";
                 int res = calculer(op, tab[i], tab[i + 1]);
-                solution=adjSolution(solution, tab[i], tab[i+1], op);
-                // solution = adjSolutionString(solution, tab[i], tab[i + 1], op);
                 if (res == attendu) {
                     System.out.println("compte est bon");
                     System.out.println("nombres d'appel : "+nombreAppel);
-                    int j=0;
-                    while(j<solution.length){
-                        // System.out.println(solution[j]+" "+intToString(solution[j+2])+" "+solution[j+1]);
-                        j++;
-                    }
                     // System.out.println(solution);
+                    affichage.append(tab[i] +" "+intToString(operateurToInt(op)) + " "+ tab[i+1] +"\n");
                     trouve = true;
-                    return 1;
+                    return true;
                 }
                 if (res <= 0)
-                    continue; // si tu break tu gagne *10 en appel
+                    break; // si tu break tu gagne *10 en appel , continue 
                 int[] newTab = new int[tab.length - 1];
                 for (int j = 0; j < newTab.length - 1; j++) {
                     newTab[j] = tab[j + 2];
                 }
                 newTab[newTab.length - 1] = res;
-                // triDecroissantTab(newTab); // inutile si tu tries en prems
                 compteEstBon(newTab, attendu);
             }
-            /*
-             * // adjSolution(tab, 5, 1, Operateurs.addition); int res =
-             * calculer(Operateurs.addition, tab[i], tab[i + 1]); System.out.println(tab[i]
-             * + "+" + tab[i + 1] + "=" + res); if (res == attendu) {
-             * System.out.println("compte est bon"); return 1; } if (res > 1000) return 1;
-             * res = calculer(Operateurs.soustraction, tab[i], tab[i + 1]);
-             * System.out.println(tab[i] + "-" + tab[i + 1] + "=" + res); if (res ==
-             * attendu) { System.out.println("compte est bon"); return 1; } res =
-             * calculer(Operateurs.division, tab[i], tab[i + 1]); System.out.println(tab[i]
-             * + "/" + tab[i + 1] + "=" + res); if (res == attendu) {
-             * System.out.println("compte est bon"); return 1; } res =
-             * calculer(Operateurs.multiplication, tab[i], tab[i + 1]);
-             * System.out.println(tab[i] + "*" + tab[i + 1] + "=" + res); if (res ==
-             * attendu) { System.out.println("compte est bon"); return 1; } int[] newTab =
-             * new int[tab.length - 1]; for (int j = 0; j < newTab.length - 1; j++) {
-             * newTab[j] = tab[j + 2]; } newTab[newTab.length - 1] = res;
-             * triDecroissantTab(newTab); compteEstBon(newTab, attendu);
-             */
-            // compteEstBon(newTab, attendu);
         }
-        return 1;
-
-        /**
-         * tester toutes les operations possibles entre chaque nombre
-         */
+        return false;
     }
 
     public static void afficherTableau(int[] tab) {
