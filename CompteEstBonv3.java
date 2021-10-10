@@ -17,7 +17,7 @@ class CompteEstBonv3 {
                 return true;
             }
             for (int j = i + 1; j < nb; j++)
-                for (int k = i; k < 3; k++) {
+                for (int k = 0; k < 3; k++) { //attention tu avais mis int k = i ??
                     int res = calculer(k, t[i], t[j]);
                     if (res > 0) {
                         /**
