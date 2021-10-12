@@ -2,7 +2,7 @@ import java.util.Arrays;
 
 class CompteEstBonv3 {
     private static StringBuffer affichage = new StringBuffer();
-    private static char[] ops = { '+','-', '*', '/' }; // permet l affichage 
+    private static char[] operateurs = { '+','-', '*', '/' }; // permet l affichage 
 
     private static int plusproche=0;
     private static int nombreAppel=0;
@@ -11,13 +11,12 @@ class CompteEstBonv3 {
 
     static boolean compteEstBon(int[] t,int nb, int attendu) {
         nombreAppel++;
-        // debug(t,nb) ;
         for (int i = 0; i < nb; i++) {
             if (t[i] == attendu) {
                 return true;
             }
             for (int j = i + 1; j < nb; j++)
-                for (int k = 0; k < 3; k++) { //attention tu avais mis int k = i ??
+                for (int k = 0; k < 4; k++) { //attention tu avais mis int k = i ??
                     int res = calculer(k, t[i], t[j]);
                     if (res > 0) {
                         /**
@@ -27,24 +26,24 @@ class CompteEstBonv3 {
                         if (Math.abs(attendu - plusproche) > Math.abs(attendu - res)) {
                             plusproche = res;
                         }
-                        int savei = t[i], savej = t[j];
+                        int tempi = t[i], tempj = t[j];
                         t[i] = res;
                         t[j] = t[nb - 1];
 
                         //nouveau tableau plus petit de 1 avec les deux operande en moins
-                        /*int[] newTab = new int[t.length - 1];
+                        /*int[] newTab = new int[nb - 1];
                         for (int z = 0; z < newTab.length - 1; z++) {
                             newTab[z] = t[z + 2];
                         }
                         newTab[newTab.length - 1] = res; */
                         // triDecroissantTab(newTab);
                         if (compteEstBon(t,nb-1,attendu)) {
-                            affichage.append(savei + " " + ops[k] + " " + savej
+                            affichage.append(tempi + " " + operateurs[k] + " " + tempj
                                     + " = " + res + "EOL"); // les etapes ne sont pas dans un ordre logique donc on prevoit de split pour retourner l affichage , EOL pour End of Line
                             return true;
                         }
-                        t[i] = savei;
-                        t[j] = savej;
+                        t[i] = tempi;
+                        t[j] = tempj;
                     }
                 }
         }
@@ -124,7 +123,7 @@ class CompteEstBonv3 {
             System.out.println("Pas de solution exacte");
             System.out.println("La valeur la plus proche est : "+plusproche);
             System.out.println("Calcul :");
-            // on relance compte est bon pour la valeur plusproche et on oubli pas de nettoyer le buffer des etapes
+            // on relance compte est bon pour la valeur plusproche et on n oubli pas de nettoyer le buffer des etapes
             affichage=new StringBuffer();
             compteEstBon(tab,tab.length, plusproche);
             afficherEtapes();
