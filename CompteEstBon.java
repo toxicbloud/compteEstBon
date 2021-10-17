@@ -1,130 +1,86 @@
-import java.lang.reflect.Array;
 import java.util.Arrays;
-import java.util.Collection;
 
+class CompteEstBon {
+    private static StringBuffer affichage = new StringBuffer();
+    private static char[] operateurs = { '+','-', '*', '/' }; // permet l affichage 
 
-public class CompteEstBon {
-    enum Operateurs {
-        addition, soustraction, division, multiplication
-    }
+    private static int plusproche=0;
+    private static int nombreAppel=0;
 
-    public static boolean trouve = false;
-    public static int plusproche = -99999999;
-    public static int nombreAppel=0;
-    public static StringBuffer affichage = new StringBuffer();
+    private static long end1,start1; // variable pour stocker les chrono
 
-    public static void main(String[] args) {
-        int[] tab = { Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2]),
-                Integer.parseInt(args[3]), Integer.parseInt(args[4]), Integer.parseInt(args[5]) };
-
-        int result = Integer.parseInt(args[6]);
-        long start1 = System.currentTimeMillis();
-        compteEstBon(tab, result);
-        long end1 = System.currentTimeMillis();      
-        System.out.println("Elapsed Time in milli seconds: "+ (end1-start1));
-        System.out.println(affichage);
-    }
-
-    public static int calculer(Operateurs op, int nb1, int nb2) {
-        int res = -1;
-        switch (op) {
-            case addition:
-                res = nb1 + nb2;
-                break;
-            case soustraction:
-                if (nb1 >= nb2) {
-                    res = nb1 - nb2;
-                    break;
-                }
-            case division:
-                if (nb1 % nb2 == 0 && nb2 != 0) {
-                    res = nb1 / nb2;
-                }
-            case multiplication:
-                res = nb1 * nb2;
-                break;
-        }
-        return res;
-    }
-
-    public static Boolean compteEstBon(int[] tab, int attendu) {
-        triDecroissantTab(tab);
+    static boolean compteEstBon(int[] t,int nb, int attendu) {
         nombreAppel++;
-        if (trouve)
-            return true;
-        for (int i = 0; i < tab.length - 1; i++) {
-            for (Operateurs op : Operateurs.values()) {
-                int res = calculer(op, tab[i], tab[i + 1]);
-                if (res == attendu) {
-                    System.out.println("compte est bon");
-                    System.out.println("nombres d'appel : "+nombreAppel);
-                    // System.out.println(solution);
-                    affichage.append(tab[i] +" "+intToString(operateurToInt(op)) + " "+ tab[i+1] +"\n");
-                    trouve = true;
-                    return true;
-                }
-                if (res <= 0)
-                    break; // si tu break tu gagne *10 en appel , continue 
-                int[] newTab = new int[tab.length - 1];
-                for (int j = 0; j < newTab.length - 1; j++) {
-                    newTab[j] = tab[j + 2];
-                }
-                newTab[newTab.length - 1] = res;
-                compteEstBon(newTab, attendu);
+        for (int i = 0; i < nb; i++) {
+            if (t[i] == attendu) {
+                return true;
             }
+            for (int j = i + 1; j < nb; j++)
+                for (int k = 0; k < 4; k++) { //attention tu avais mis int k = i ??
+                    int res = calculer(k, t[i], t[j]);
+                    if (res > 0) {
+                        /**
+                         * on regarde si le resultat obtenu est plus proche du resultat attendu que le dernier
+                         * pour le cas ou on ne peut pas trouver de solution exacte
+                         */
+                        if (Math.abs(attendu - plusproche) > Math.abs(attendu - res)) {
+                            plusproche = res;
+                        }
+                        int tempi = t[i], tempj = t[j];
+                        t[i] = res;
+                        t[j] = t[nb - 1];
+
+                        //nouveau tableau plus petit de 1 avec les deux operande en moins
+                        /*int[] newTab = new int[nb - 1];
+                        for (int z = 0; z < newTab.length - 1; z++) {
+                            newTab[z] = t[z + 2];
+                        }
+                        newTab[newTab.length - 1] = res; */
+                        // triDecroissantTab(newTab);
+                        if (compteEstBon(t,nb-1,attendu)) {
+                            affichage.append(tempi + " " + operateurs[k] + " " + tempj
+                                    + " = " + res + "EOL"); // les etapes ne sont pas dans un ordre logique donc on prevoit de split pour retourner l affichage , EOL pour End of Line
+                            return true;
+                        }
+                        t[i] = tempi;
+                        t[j] = tempj;
+                    }
+                }
         }
         return false;
     }
-
-    public static void afficherTableau(int[] tab) {
-        System.out.println(" afficher tableau ");
-        for (int i : tab) {
-            System.out.print(i + " ");
-        }
-        System.out.println("\n---------");
-    }
-
-    public static int[] adjSolution(int[] tab, int nb1, int nb2, Operateurs op) {
-        int[] newtab = new int[tab.length + 3];
-        for (int i = 0; i < tab.length; i++)
-            newtab[i] = tab[i];
-        newtab[tab.length - 3 + 1] = nb1;
-        newtab[tab.length - 2 + 1] = nb2;
-        newtab[tab.length - 1 + 1] = operateurToInt(op);
-        return newtab;
-    }
-
-    public static String adjSolutionString(String solution, int nb1, int nb2, Operateurs op) {
-        solution += " \n";
-        solution += nb1 + " " + operateurToInt(op) + " " + nb2;
-        return solution;
-    }
-
-    public static int operateurToInt(Operateurs op) {
-        int opInt = 0;
-        for (int i = 0; i < Operateurs.values().length; i++) {
-            if (Operateurs.values()[i] == op)
-                opInt = i;
-        }
-        return opInt;
-    }
-
-    public static String intToString(int i){
-        switch (i) {
+    /**
+     * 
+     * @param op  operation represente par un entier
+     * @param nb1 operande 1
+     * @param nb2 operande 2
+     * @return resultat ou -1 si l operation n est pas interessante
+     */
+    public static int calculer(int op, int nb1, int nb2) {
+        switch (op) {
             case 0:
-                return "+";
+                return nb1 + nb2;
             case 1:
-                return "-";
+                if (nb1 > nb2) {
+                    return nb1 - nb2;
+                } else {
+                    return -1;
+                }
             case 2:
-                return "/";
+                return nb1 * nb2;
             case 3:
-                return "*";
-            default:
-                break;
+                if (nb1 % nb2 == 0) {
+                    return nb1 / nb2;
+                }
         }
-        return "null";
+        return -1;
     }
 
+    /**
+     * tri le tableau de maniere decroissante
+     * 
+     * @param array tableau d entier
+     */
     public static void triDecroissantTab(int[] array) {
         Arrays.sort(array);
         for (int i = 0; i < array.length / 2; i++) {
@@ -132,5 +88,47 @@ public class CompteEstBon {
             array[i] = array[array.length - 1 - i];
             array[array.length - 1 - i] = temp;
         }
+    }
+
+    /**
+     * affiche les etapes dans un ordre logique 
+     * en inversant le buffer
+     */
+    public static void afficherEtapes() {
+        String[] aff = affichage.toString().split("EOL");
+        for (int i = aff.length - 1; i >= 0; i--) {
+            System.out.println(aff[i]);
+        }
+    }
+    /**
+     * statistiques d execution du programme
+     */
+    public static void afficherStats(){
+        System.out.println("\n====STATISTIQUES====");
+        System.out.println("nombre d'appels de la fonction compteEstBon : "+nombreAppel);
+        System.out.println("Temps ecoule en ms: " + (end1 - start1));
+    }
+
+    public static void main(String[] args) {
+        int[] tab = { Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2]), // on recupere les operandes
+            Integer.parseInt(args[3]), Integer.parseInt(args[4]), Integer.parseInt(args[5]) };
+        
+        int attendu = Integer.parseInt(args[6]);
+        start1 = System.currentTimeMillis(); // demarrage du chronometre
+        if (compteEstBon(tab,tab.length, attendu)) {
+            System.out.println("Le compte est bon !!");
+            System.out.println("Calcul :");
+            afficherEtapes();
+        } else {
+            System.out.println("Pas de solution exacte");
+            System.out.println("La valeur la plus proche est : "+plusproche);
+            System.out.println("Calcul :");
+            // on relance compte est bon pour la valeur plusproche et on n oubli pas de nettoyer le buffer des etapes
+            affichage=new StringBuffer();
+            compteEstBon(tab,tab.length, plusproche);
+            afficherEtapes();
+        }
+        end1 = System.currentTimeMillis(); // arret chronometre
+        afficherStats();
     }
 }

@@ -8,7 +8,7 @@
 char ops[4] = {'+', '-', '*', '/'};
 int operande[6]={1,7,1,2,25,100};
 int attendu=220;
-int plusporche = 0;
+int plusproche = 0;
 int nombreAppel = 0;
 char *buffer;
 int main()
@@ -27,12 +27,12 @@ bool compteEstBon(int tab[],int nb,int attendu)
             return true;
         }
         for(int j = 0; j < nb; j++)
-            for (int k = 0; i < 3; k++)
+            for (int k = 0; i < 4; k++)
             {
                 int res=calculer(k,tab[i],tab[j]);
                 if(res>0){
-                    if(abs(attendu-plusporche)>abs(attendu-res)){
-                        plusporche=res;
+                    if(abs(attendu-plusproche)>abs(attendu-res)){
+                        plusproche=res;
                     }
                     int savei=tab[i],savej=tab[j];
                     tab[i]=res;
