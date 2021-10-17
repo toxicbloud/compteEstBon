@@ -16,7 +16,7 @@ class CompteEstBon {
                 return true;
             }
             for (int j = i + 1; j < nb; j++)
-                for (int k = 0; k < 4; k++) { //attention tu avais mis int k = i ??
+                for (int k = 0; k < 4; k++) {
                     int res = calculer(k, t[i], t[j]);
                     if (res > 0) {
                         /**
@@ -42,6 +42,10 @@ class CompteEstBon {
                                     + " = " + res + "EOL"); // les etapes ne sont pas dans un ordre logique donc on prevoit de split pour retourner l affichage , EOL pour End of Line
                             return true;
                         }
+                        /**
+                         * on remet les valeurs initiales au bon endroit
+                         * pour pouvoir continuer les iterations
+                         */
                         t[i] = tempi;
                         t[j] = tempj;
                     }
@@ -123,7 +127,7 @@ class CompteEstBon {
             System.out.println("Pas de solution exacte");
             System.out.println("La valeur la plus proche est : "+plusproche);
             System.out.println("Calcul :");
-            // on relance compte est bon pour la valeur plusproche et on n oubli pas de nettoyer le buffer des etapes
+            // on relance compte est bon pour la valeur plusproche et on n oublie pas de nettoyer le buffer des etapes
             affichage=new StringBuffer();
             compteEstBon(tab,tab.length, plusproche);
             afficherEtapes();

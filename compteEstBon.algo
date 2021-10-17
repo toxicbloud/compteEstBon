@@ -1,20 +1,36 @@
 fonction compteEstBon(t:tableau entier, nb:entier,attendu:entier):booleen
 debut
-    nombreAppel <- nombreAppel + 1
     pour i de 0 a n faire
-        si t[i]= attendu alors
+        si t[i] = attendu alors
             retourne  vrai
         fsi
         pour j de i+1 a n faire
             pour k de nombre a nombre faire
-                res <- calculer(k,t[i],t[j])
+                res ◄- calculer(k,t[i],t[j])
                 si res > 0 alors
+                    //on compare la valeur absolu de leur difference
+                    si |attendu-plusproche| > |attendu-res| alors
+                        plusproche ◄- res
+                    fsi
+                    tempi ◄- t[i]
+                    tempj ◄- t[j]
                     
+                    t[i] ◄- res
+                    t[j] ◄- t[nb-1]
+
+                    si compteEstBon(t,nb-1,attendu) alors
+                        affichage ◄- concat(affichage,concat(tempi,concat(" ",concat(operateurs[k],concat(" ",concat(tempj,concat("=",concat(res,"EOL"))))))))
+                        retourne vrai;
+                    fsi
+                    t[i]=tempi;
+                    t[j]=tempj;
                 fsi
             fpour
         fpour
     fpour
+    retourne faux
 fin
+
 
 fonction calculer( op:entier, nb1:entier, nb2:entier):entier
 debut
@@ -44,7 +60,9 @@ debut
 fin
 
 lexique:
-    Type1 = > // description
-    nombreAppel: entier // nombre d'appel de la fonction recursive compteEstBon
-    i: entier // description
-    t: tableau
+    i,j,k: entier // incrementeur
+    nb: entier // taille du tableau courant
+    attendu: entier // resultat attendu
+    t: tableau entier // tableau qui contient les operandes
+    operateurs: tableau entier // tableau qui contient les operateurs sous forme de caractere
+    affichage: chaine // chaine qui contient les calculs à faire
